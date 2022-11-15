@@ -52,7 +52,7 @@ const renderWorkspacePage = async () => {
  */
 
 const testButton = async (label: string, actionMock: jest.SpyInstance) => {
-  await renderWorkspacePage()
+  renderWorkspacePage()
   // REMARK: exact here because the "Start" button and "START" label for
   //         workspace schedule could otherwise conflict.
   const button = await screen.findByText(label, { exact: true })
@@ -160,7 +160,7 @@ describe("WorkspacePage", () => {
       .spyOn(api, "cancelWorkspaceBuild")
       .mockImplementation(() => Promise.resolve({ message: "job canceled" }))
 
-    await renderWorkspacePage()
+    renderWorkspacePage()
 
     const cancelButton = await screen.findByRole("button", {
       name: "cancel action",

@@ -232,6 +232,48 @@ func TestConfig(t *testing.T) {
 			require.Equal(t, config.Prometheus.Enable.Value, true)
 			require.Equal(t, config.Prometheus.Address.Value, config.Prometheus.Address.Default)
 		},
+	}, {
+		Name: "Experimental - no features",
+		Env: map[string]string{
+			"CODER_EXPERIMENTAL": "",
+		},
+		Valid: func(config *codersdk.DeploymentConfig) {
+			require.Empty(t, config.Experimental.Value)
+			require.False(t, config.Experimental.Value.Enabled("foo"))
+		},
+	}, {
+		Name: "Experimental - multiple features",
+		Env: map[string]string{
+			"CODER_EXPERIMENTAL": "foo,bar",
+		},
+		Valid: func(config *codersdk.DeploymentConfig) {
+			require.ElementsMatch(t, config.Experimental.Value, []string{"foo", "bar"})
+			require.True(t, config.Experimental.Value.Enabled("foo"))
+			require.True(t, config.Experimental.Value.Enabled("bar"))
+			require.False(t, config.Experimental.Value.Enabled("baz"))
+		},
+	}, {
+		Name: "Experimental - wildcard",
+		Env: map[string]string{
+			"CODER_EXPERIMENTAL": "*",
+		},
+		Valid: func(config *codersdk.DeploymentConfig) {
+			require.ElementsMatch(t, config.Experimental.Value, []string{"*"})
+			require.True(t, config.Experimental.Value.Enabled("foo"))
+			require.True(t, config.Experimental.Value.Enabled("bar"))
+			require.True(t, config.Experimental.Value.Enabled("baz"))
+		},
+	}, {
+		Name: "Experimental - legacy wildcard specified after other features",
+		Env: map[string]string{
+			"CODER_EXPERIMENTAL": "foo,true",
+		},
+		Valid: func(config *codersdk.DeploymentConfig) {
+			require.ElementsMatch(t, config.Experimental.Value, []string{"foo", "true"})
+			require.True(t, config.Experimental.Value.Enabled("foo"))
+			require.True(t, config.Experimental.Value.Enabled("bar"))
+			require.True(t, config.Experimental.Value.Enabled("baz"))
+		},
 	}} {
 		tc := tc
 		t.Run(tc.Name, func(t *testing.T) {

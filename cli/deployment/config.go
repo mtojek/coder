@@ -446,10 +446,11 @@ func newConfig() *codersdk.DeploymentConfig {
 				Default:     512,
 			},
 		},
-		Experimental: &codersdk.DeploymentConfigField[bool]{
-			Name:  "Experimental",
-			Usage: "Enable experimental features. Experimental features are not ready for production.",
-			Flag:  "experimental",
+		Experimental: &codersdk.DeploymentConfigField[codersdk.ExperimentalConfig]{
+			Name:    "Experimental",
+			Usage:   "Enable experimental features. Experimental features are not ready for production.",
+			Flag:    "experimental",
+			Default: codersdk.ExperimentalConfig([]string{}),
 		},
 		UpdateCheck: &codersdk.DeploymentConfigField[bool]{
 			Name:    "Update Check",
@@ -551,18 +552,18 @@ func setConfig(prefix string, vip *viper.Viper, target interface{}) {
 		case time.Duration:
 			vip.MustBindEnv(prefix, env)
 			val.FieldByName("Value").SetInt(int64(vip.GetDuration(prefix)))
-		case []string:
+		case []string, codersdk.ExperimentalConfig:
 			vip.MustBindEnv(prefix, env)
 			// As of October 21st, 2022 we supported delimiting a string
 			// with a comma, but Viper only supports with a space. This
 			// is a small hack around it!
 			rawSlice := reflect.ValueOf(vip.GetStringSlice(prefix)).Interface()
-			slice, ok := rawSlice.([]string)
+			stringSlice, ok := rawSlice.([]string)
 			if !ok {
 				panic(fmt.Sprintf("string slice is of type %T", rawSlice))
 			}
-			value := make([]string, 0, len(slice))
-			for _, entry := range slice {
+			value := make([]string, 0, len(stringSlice))
+			for _, entry := range stringSlice {
 				value = append(value, strings.Split(entry, ",")...)
 			}
 			val.FieldByName("Value").Set(reflect.ValueOf(value))
@@ -743,7 +744,7 @@ func setFlags(prefix string, flagset *pflag.FlagSet, vip *viper.Viper, target in
 			_ = flagset.IntP(flg, shorthand, vip.GetInt(prefix), usage)
 		case time.Duration:
 			_ = flagset.DurationP(flg, shorthand, vip.GetDuration(prefix), usage)
-		case []string:
+		case []string, codersdk.ExperimentalConfig:
 			_ = flagset.StringSliceP(flg, shorthand, vip.GetStringSlice(prefix), usage)
 		case []codersdk.GitAuthConfig:
 			// Ignore this one!

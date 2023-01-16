@@ -250,7 +250,8 @@ func (api *API) updateEntitlements(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	entitlements.Experimental = api.DeploymentConfig.Experimental.Value
+	entitlements.Experimental = len(api.DeploymentConfig.Experimental.Value) > 0
+	entitlements.ExperimentalFeatures = api.DeploymentConfig.Experimental.Value
 
 	featureChanged := func(featureName string) (changed bool, enabled bool) {
 		if api.entitlements.Features == nil {

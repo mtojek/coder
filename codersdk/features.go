@@ -46,12 +46,13 @@ type Feature struct {
 }
 
 type Entitlements struct {
-	Features     map[string]Feature `json:"features"`
-	Warnings     []string           `json:"warnings"`
-	Errors       []string           `json:"errors"`
-	HasLicense   bool               `json:"has_license"`
-	Experimental bool               `json:"experimental"`
-	Trial        bool               `json:"trial"`
+	Features             map[string]Feature `json:"features"`
+	Warnings             []string           `json:"warnings"`
+	Errors               []string           `json:"errors"`
+	HasLicense           bool               `json:"has_license"`
+	Experimental         bool               `json:"experimental"`
+	ExperimentalFeatures []string           `json:"experimental_features"`
+	Trial                bool               `json:"trial"`
 }
 
 func (c *Client) Entitlements(ctx context.Context) (Entitlements, error) {

@@ -684,6 +684,8 @@ func (g *Generator) typescriptType(ty types.Type) (TypescriptType, error) {
 			return TypescriptType{ValueType: "string", Optional: true}, nil
 		case "github.com/coder/coder/codersdk.NullTime":
 			return TypescriptType{ValueType: "string", Optional: true}, nil
+		case "github.com/coder/coder/codersdk.ExperimentalConfig":
+			return TypescriptType{ValueType: "string[]"}, nil
 		case "github.com/google/uuid.NullUUID":
 			return TypescriptType{ValueType: "string", Optional: true}, nil
 		case "github.com/google/uuid.UUID":

@@ -25,3 +25,8 @@ export enum FeatureNames {
   HighAvailability = "high_availability",
   Appearance = "appearance",
 }
+
+// Keep up to date with coder/codersdk/features.go
+export enum ExperimentalFeatures {
+  VSCodeLocal = "vscode_local",
+}

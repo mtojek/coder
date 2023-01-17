@@ -38,6 +38,14 @@ var FeatureNames = []string{
 	FeatureAppearance,
 }
 
+const (
+	ExperimentalFeatureVSCodeLocal = "vscode_local"
+)
+
+var ExperimentalFeatures = []string{
+	ExperimentalFeatureVSCodeLocal,
+}
+
 type Feature struct {
 	Entitlement Entitlement `json:"entitlement"`
 	Enabled     bool        `json:"enabled"`

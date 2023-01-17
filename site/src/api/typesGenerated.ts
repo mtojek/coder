@@ -310,7 +310,7 @@ export interface DeploymentConfig {
   readonly scim_api_key: DeploymentConfigField<string>
   readonly provisioner: ProvisionerConfig
   readonly rate_limit: RateLimitConfig
-  readonly experimental: DeploymentConfigField<ExperimentalConfig>
+  readonly experimental: DeploymentConfigField<string[]>
   readonly update_check: DeploymentConfigField<boolean>
   readonly max_token_lifetime: DeploymentConfigField<number>
   readonly swagger: SwaggerConfig
@@ -1158,10 +1158,4 @@ export type WorkspaceStatus =
 export type WorkspaceTransition = "delete" | "start" | "stop"
 
 // From codersdk/deploymentconfig.go
-export type Flaggable =
-  | string
-  | number
-  | boolean
-  | string[]
-  | GitAuthConfig[]
-  | ExperimentalConfig
+export type Flaggable = string | number | boolean | string[] | GitAuthConfig[]

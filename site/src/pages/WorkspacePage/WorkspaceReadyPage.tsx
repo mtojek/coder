@@ -1,5 +1,5 @@
 import { useActor, useSelector } from "@xstate/react"
-import { FeatureNames } from "api/types"
+import { ExperimentalFeatures, FeatureNames } from "api/types"
 import dayjs from "dayjs"
 import { useContext, useEffect } from "react"
 import { Helmet } from "react-helmet-async"
@@ -42,9 +42,9 @@ export const WorkspaceReadyPage = ({
     workspaceState.children["scheduleBannerMachine"],
   )
   const xServices = useContext(XServiceContext)
-  const experimental = useSelector(
+  const { experimental_features } = useSelector(
     xServices.entitlementsXService,
-    (state) => state.context.entitlements.experimental,
+    (state) => state.context.entitlements,
   )
   const featureVisibility = useSelector(
     xServices.entitlementsXService,
@@ -125,7 +125,8 @@ export const WorkspaceReadyPage = ({
         canUpdateWorkspace={canUpdateWorkspace}
         hideSSHButton={featureVisibility[FeatureNames.BrowserOnly]}
         hideVSCodeDesktopButton={
-          !experimental || featureVisibility[FeatureNames.BrowserOnly]
+          !experimental_features.includes(ExperimentalFeatures.VSCodeLocal) ||
+          featureVisibility[FeatureNames.BrowserOnly]
         }
         workspaceErrors={{
           [WorkspaceErrors.GET_RESOURCES_ERROR]: refreshWorkspaceWarning,

@@ -31,6 +31,7 @@ export const defaultEntitlements = (): TypesGen.Entitlements => {
     errors: [],
     warnings: [],
     experimental: false,
+    experimental_features: [],
     trial: false,
   }
 }

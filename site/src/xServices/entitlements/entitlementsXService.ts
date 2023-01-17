@@ -25,6 +25,7 @@ const emptyEntitlements = {
   features: {},
   has_license: false,
   experimental: false,
+  experimental_features: [],
   trial: false,
 }
 

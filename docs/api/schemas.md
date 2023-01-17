@@ -2358,16 +2358,16 @@ CreateParameterRequest is a structure used to create a new parameter value for a
 
 ### Properties
 
-| Name                    | Type                                 | Required | Restrictions | Description |
-| ----------------------- | ------------------------------------ | -------- | ------------ | ----------- |
-| `errors`                | array of string                      | false    |              |             |
-| `experimental`          | boolean                              | false    |              |             |
-| `experimental_features` | array of string                      | false    |              |             |
-| `features`              | object                               | false    |              |             |
-| » `[any property]`      | [codersdk.Feature](#codersdkfeature) | false    |              |             |
-| `has_license`           | boolean                              | false    |              |             |
-| `trial`                 | boolean                              | false    |              |             |
-| `warnings`              | array of string                      | false    |              |             |
+| Name                    | Type                                 | Required | Restrictions | Description                                    |
+| ----------------------- | ------------------------------------ | -------- | ------------ | ---------------------------------------------- |
+| `errors`                | array of string                      | false    |              |                                                |
+| `experimental`          | boolean                              | false    |              | Experimental use ExperimentalFeatures instead. |
+| `experimental_features` | array of string                      | false    |              |                                                |
+| `features`              | object                               | false    |              |                                                |
+| » `[any property]`      | [codersdk.Feature](#codersdkfeature) | false    |              |                                                |
+| `has_license`           | boolean                              | false    |              |                                                |
+| `trial`                 | boolean                              | false    |              |                                                |
+| `warnings`              | array of string                      | false    |              |                                                |
 
 ## codersdk.Feature
 

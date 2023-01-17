@@ -1341,7 +1341,7 @@ CreateParameterRequest is a structure used to create a new parameter value for a
     }
   },
   "experimental": {
-    "default": true,
+    "default": ["string"],
     "enterprise": true,
     "flag": "string",
     "hidden": true,
@@ -1349,7 +1349,7 @@ CreateParameterRequest is a structure used to create a new parameter value for a
     "secret": true,
     "shorthand": "string",
     "usage": "string",
-    "value": true
+    "value": ["string"]
   },
   "gitauth": {
     "default": [
@@ -2053,7 +2053,7 @@ CreateParameterRequest is a structure used to create a new parameter value for a
 | `browser_only`                       | [codersdk.DeploymentConfigField-bool](#codersdkdeploymentconfigfield-bool)                                                 | false    |              |                                                 |
 | `cache_directory`                    | [codersdk.DeploymentConfigField-string](#codersdkdeploymentconfigfield-string)                                             | false    |              |                                                 |
 | `derp`                               | [codersdk.DERP](#codersdkderp)                                                                                             | false    |              |                                                 |
-| `experimental`                       | [codersdk.DeploymentConfigField-bool](#codersdkdeploymentconfigfield-bool)                                                 | false    |              |                                                 |
+| `experimental`                       | [codersdk.DeploymentConfigField-codersdk_ExperimentalConfig](#codersdkdeploymentconfigfield-codersdk_experimentalconfig)   | false    |              |                                                 |
 | `gitauth`                            | [codersdk.DeploymentConfigField-array_codersdk_GitAuthConfig](#codersdkdeploymentconfigfield-array_codersdk_gitauthconfig) | false    |              |                                                 |
 | `http_address`                       | [codersdk.DeploymentConfigField-string](#codersdkdeploymentconfigfield-string)                                             | false    |              |                                                 |
 | `in_memory_database`                 | [codersdk.DeploymentConfigField-bool](#codersdkdeploymentconfigfield-bool)                                                 | false    |              |                                                 |
@@ -2193,6 +2193,36 @@ CreateParameterRequest is a structure used to create a new parameter value for a
 | `usage`      | string  | false    |              |             |
 | `value`      | boolean | false    |              |             |
 
+## codersdk.DeploymentConfigField-codersdk_ExperimentalConfig
+
+```json
+{
+  "default": ["string"],
+  "enterprise": true,
+  "flag": "string",
+  "hidden": true,
+  "name": "string",
+  "secret": true,
+  "shorthand": "string",
+  "usage": "string",
+  "value": ["string"]
+}
+```
+
+### Properties
+
+| Name         | Type            | Required | Restrictions | Description |
+| ------------ | --------------- | -------- | ------------ | ----------- |
+| `default`    | array of string | false    |              |             |
+| `enterprise` | boolean         | false    |              |             |
+| `flag`       | string          | false    |              |             |
+| `hidden`     | boolean         | false    |              |             |
+| `name`       | string          | false    |              |             |
+| `secret`     | boolean         | false    |              |             |
+| `shorthand`  | string          | false    |              |             |
+| `usage`      | string          | false    |              |             |
+| `value`      | array of string | false    |              |             |
+
 ## codersdk.DeploymentConfigField-int
 
 ```json
@@ -2305,6 +2335,7 @@ CreateParameterRequest is a structure used to create a new parameter value for a
 {
   "errors": ["string"],
   "experimental": true,
+  "experimental_features": ["string"],
   "features": {
     "property1": {
       "actual": 0,
@@ -2327,15 +2358,16 @@ CreateParameterRequest is a structure used to create a new parameter value for a
 
 ### Properties
 
-| Name               | Type                                 | Required | Restrictions | Description |
-| ------------------ | ------------------------------------ | -------- | ------------ | ----------- |
-| `errors`           | array of string                      | false    |              |             |
-| `experimental`     | boolean                              | false    |              |             |
-| `features`         | object                               | false    |              |             |
-| » `[any property]` | [codersdk.Feature](#codersdkfeature) | false    |              |             |
-| `has_license`      | boolean                              | false    |              |             |
-| `trial`            | boolean                              | false    |              |             |
-| `warnings`         | array of string                      | false    |              |             |
+| Name                    | Type                                 | Required | Restrictions | Description |
+| ----------------------- | ------------------------------------ | -------- | ------------ | ----------- |
+| `errors`                | array of string                      | false    |              |             |
+| `experimental`          | boolean                              | false    |              |             |
+| `experimental_features` | array of string                      | false    |              |             |
+| `features`              | object                               | false    |              |             |
+| » `[any property]`      | [codersdk.Feature](#codersdkfeature) | false    |              |             |
+| `has_license`           | boolean                              | false    |              |             |
+| `trial`                 | boolean                              | false    |              |             |
+| `warnings`              | array of string                      | false    |              |             |
 
 ## codersdk.Feature
 

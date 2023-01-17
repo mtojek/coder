@@ -5697,7 +5697,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/codersdk.DERP"
                 },
                 "experimental": {
-                    "$ref": "#/definitions/codersdk.DeploymentConfigField-bool"
+                    "$ref": "#/definitions/codersdk.DeploymentConfigField-codersdk_ExperimentalConfig"
                 },
                 "gitauth": {
                     "$ref": "#/definitions/codersdk.DeploymentConfigField-array_codersdk_GitAuthConfig"
@@ -5881,6 +5881,44 @@ const docTemplate = `{
                 }
             }
         },
+        "codersdk.DeploymentConfigField-codersdk_ExperimentalConfig": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "enterprise": {
+                    "type": "boolean"
+                },
+                "flag": {
+                    "type": "string"
+                },
+                "hidden": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "secret": {
+                    "type": "boolean"
+                },
+                "shorthand": {
+                    "type": "string"
+                },
+                "usage": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "codersdk.DeploymentConfigField-int": {
             "type": "object",
             "properties": {
@@ -6001,6 +6039,12 @@ const docTemplate = `{
                 },
                 "experimental": {
                     "type": "boolean"
+                },
+                "experimental_features": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "features": {
                     "type": "object",

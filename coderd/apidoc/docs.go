@@ -401,7 +401,7 @@ const docTemplate = `{
                     "General"
                 ],
                 "summary": "Get experimental features",
-                "operationId": "get-experiments",
+                "operationId": "get-experimental-features",
                 "responses": {
                     "200": {
                         "description": "OK",

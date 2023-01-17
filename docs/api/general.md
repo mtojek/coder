@@ -1010,6 +1010,37 @@ curl -X POST http://coder-server:8080/api/v2/csp/reports \
 
 To perform this operation, you must be authenticated. [Learn more](authentication.md).
 
+## Get experimental features
+
+### Code samples
+
+```shell
+# Example request using curl
+curl -X GET http://coder-server:8080/api/v2/experiments \
+  -H 'Accept: application/json' \
+  -H 'Coder-Session-Token: API_KEY'
+```
+
+`GET /experiments`
+
+### Example responses
+
+> 200 Response
+
+```json
+["string"]
+```
+
+### Responses
+
+| Status | Meaning                                                 | Description | Schema          |
+| ------ | ------------------------------------------------------- | ----------- | --------------- |
+| 200    | [OK](https://tools.ietf.org/html/rfc7231#section-6.3.1) | OK          | array of string |
+
+<h3 id="get-experimental-features-responseschema">Response Schema</h3>
+
+To perform this operation, you must be authenticated. [Learn more](authentication.md).
+
 ## Update check
 
 ### Code samples

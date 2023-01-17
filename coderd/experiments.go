@@ -7,11 +7,11 @@ import (
 )
 
 // @Summary Get experimental features
-// @ID get-experiments
+// @ID get-experimental-features
 // @Security CoderSessionToken
 // @Produce json
 // @Tags General
-// @Success 200 {object} codersdk.ExperimentalConfig
+// @Success 200 {object} codersdk.ExperimentsResponse
 // @Router /experiments [get]
 func (api *API) handleExperimentsGet(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()

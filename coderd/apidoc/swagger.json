@@ -329,6 +329,30 @@
         }
       }
     },
+    "/experiments": {
+      "get": {
+        "security": [
+          {
+            "CoderSessionToken": []
+          }
+        ],
+        "produces": ["application/json"],
+        "tags": ["General"],
+        "summary": "Get experimental features",
+        "operationId": "get-experimental-features",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
     "/files": {
       "post": {
         "security": [
@@ -5391,14 +5415,8 @@
           }
         },
         "experimental": {
-          "description": "DEPRECATED: use ExperimentalFeatures instead.",
+          "description": "DEPRECATED: use Experiments instead.",
           "type": "boolean"
-        },
-        "experimental_features": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         },
         "features": {
           "type": "object",

@@ -38,14 +38,6 @@ var FeatureNames = []string{
 	FeatureAppearance,
 }
 
-const (
-	ExperimentalFeatureVSCodeLocal = "vscode_local"
-)
-
-var ExperimentalFeatures = []string{
-	ExperimentalFeatureVSCodeLocal,
-}
-
 type Feature struct {
 	Entitlement Entitlement `json:"entitlement"`
 	Enabled     bool        `json:"enabled"`
@@ -58,10 +50,9 @@ type Entitlements struct {
 	Warnings   []string           `json:"warnings"`
 	Errors     []string           `json:"errors"`
 	HasLicense bool               `json:"has_license"`
-	// DEPRECATED: use ExperimentalFeatures instead.
-	Experimental         bool     `json:"experimental"`
-	ExperimentalFeatures []string `json:"experimental_features"`
-	Trial                bool     `json:"trial"`
+	// DEPRECATED: use Experiments instead.
+	Experimental bool `json:"experimental"`
+	Trial        bool `json:"trial"`
 }
 
 func (c *Client) Entitlements(ctx context.Context) (Entitlements, error) {

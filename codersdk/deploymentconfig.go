@@ -67,10 +67,10 @@ type DERPConfig struct {
 	Path *DeploymentConfigField[string] `json:"path" typescript:",notnull"`
 }
 
-// ExperimentalConfig is a list of experimental features that are enabled.
-// The "*" wildcard is supported and enables all features.
+// ExperimentalConfig is a list of experiments that are enabled.
+// The "*" wildcard is supported and enables all experiments.
 // "true" is a snyonym for "*" and is supported for backwards compatibility.
-// TODO: make "*" and "true" explicitly enumerate all features.
+// TODO: make "*" and "true" map to codersdk.ExperimentsAll
 type ExperimentalConfig []string
 
 // Enabled returns true if the given experimental config option is enabled.

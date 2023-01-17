@@ -63,6 +63,5 @@ func TestFeaturesList(t *testing.T) {
 		}
 		assert.False(t, entitlements.HasLicense)
 		assert.False(t, entitlements.Experimental)
-		assert.Empty(t, entitlements.ExperimentalFeatures)
 	})
 }

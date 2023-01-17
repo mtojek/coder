@@ -387,6 +387,34 @@ const docTemplate = `{
                 }
             }
         },
+        "/experiments": {
+            "get": {
+                "security": [
+                    {
+                        "CoderSessionToken": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "General"
+                ],
+                "summary": "Get experimental features",
+                "operationId": "get-experiments",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/files": {
             "post": {
                 "security": [
@@ -6038,14 +6066,8 @@ const docTemplate = `{
                     }
                 },
                 "experimental": {
-                    "description": "DEPRECATED: use ExperimentalFeatures instead.",
+                    "description": "DEPRECATED: use Experiments instead.",
                     "type": "boolean"
-                },
-                "experimental_features": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
                 },
                 "features": {
                     "type": "object",

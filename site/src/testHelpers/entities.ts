@@ -940,7 +940,6 @@ export const MockEntitlements: TypesGen.Entitlements = {
   has_license: false,
   features: {},
   experimental: false,
-  experimental_features: [],
   trial: false,
 }
 
@@ -949,7 +948,6 @@ export const MockEntitlementsWithWarnings: TypesGen.Entitlements = {
   warnings: ["You are over your active user limit.", "And another thing."],
   has_license: true,
   experimental: false,
-  experimental_features: [],
   trial: false,
   features: {
     user_limit: {
@@ -974,7 +972,6 @@ export const MockEntitlementsWithAuditLog: TypesGen.Entitlements = {
   warnings: [],
   has_license: true,
   experimental: false,
-  experimental_features: [],
   trial: false,
   features: {
     audit_log: {
@@ -983,6 +980,8 @@ export const MockEntitlementsWithAuditLog: TypesGen.Entitlements = {
     },
   },
 }
+
+export const MockExperiments: TypesGen.ExperimentsResponse = [Types.Experiments.VSCodeLocal]
 
 export const MockAuditLog: TypesGen.AuditLog = {
   id: "fbd2116a-8961-4954-87ae-e4575bd29ce0",

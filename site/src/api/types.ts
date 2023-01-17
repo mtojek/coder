@@ -26,7 +26,7 @@ export enum FeatureNames {
   Appearance = "appearance",
 }
 
-// Keep up to date with coder/codersdk/features.go
-export enum ExperimentalFeatures {
+// Keep up to date with coder/codersdk/experiments.go
+export enum Experiments {
   VSCodeLocal = "vscode_local",
 }

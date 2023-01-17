@@ -31,7 +31,6 @@ export const defaultEntitlements = (): TypesGen.Entitlements => {
     errors: [],
     warnings: [],
     experimental: false,
-    experimental_features: [],
     trial: false,
   }
 }
@@ -621,6 +620,18 @@ export const getEntitlements = async (): Promise<TypesGen.Entitlements> => {
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 404) {
       return defaultEntitlements()
+    }
+    throw error
+  }
+}
+
+export const getExperiments = async (): Promise<TypesGen.ExperimentsResponse> => {
+  try {
+    const response = await axios.get("/api/v2/experiments")
+    return response.data
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      return []
     }
     throw error
   }

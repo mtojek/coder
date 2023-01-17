@@ -1,5 +1,5 @@
 import { useActor, useSelector } from "@xstate/react"
-import { ExperimentalFeatures, FeatureNames } from "api/types"
+import { Experiments, FeatureNames } from "api/types"
 import dayjs from "dayjs"
 import { useContext, useEffect } from "react"
 import { Helmet } from "react-helmet-async"
@@ -42,9 +42,9 @@ export const WorkspaceReadyPage = ({
     workspaceState.children["scheduleBannerMachine"],
   )
   const xServices = useContext(XServiceContext)
-  const { experimental_features } = useSelector(
-    xServices.entitlementsXService,
-    (state) => state.context.entitlements,
+  const { experiments } = useSelector(
+    xServices.experimentsService,
+    (state) => state.context.experiments,
   )
   const featureVisibility = useSelector(
     xServices.entitlementsXService,
@@ -125,7 +125,7 @@ export const WorkspaceReadyPage = ({
         canUpdateWorkspace={canUpdateWorkspace}
         hideSSHButton={featureVisibility[FeatureNames.BrowserOnly]}
         hideVSCodeDesktopButton={
-          !experimental_features.includes(ExperimentalFeatures.VSCodeLocal) ||
+          !experiments.includes(Experiments.VSCodeLocal) ||
           featureVisibility[FeatureNames.BrowserOnly]
         }
         workspaceErrors={{

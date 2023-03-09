@@ -467,6 +467,18 @@ func (api *API) postWorkspaceBuilds(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	legacyParameters, err := api.Database.ParameterValues(ctx, database.ParameterValuesParams{
+		Scopes:   []database.ParameterScope{database.ParameterScopeWorkspace},
+		ScopeIds: []uuid.UUID{workspace.ID},
+	})
+	if err != nil && !xerrors.Is(err, sql.ErrNoRows) {
+		httpapi.Write(ctx, rw, http.StatusInternalServerError, codersdk.Response{
+			Message: "Error fetching previous legacy parameters.",
+			Detail:  err.Error(),
+		})
+		return
+	}
+
 	lastBuildParameters, err := api.Database.GetWorkspaceBuildParameters(ctx, priorHistory.ID)
 	if err != nil {
 		httpapi.Write(ctx, rw, http.StatusInternalServerError, codersdk.Response{
@@ -476,6 +488,16 @@ func (api *API) postWorkspaceBuilds(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 	apiLastBuildParameters := convertWorkspaceBuildParameters(lastBuildParameters)
+
+	// Include values from old parameters
+	for _, legacyParameter := range legacyParameters {
+		if legacyParameter.Name == "cpu" {
+			apiLastBuildParameters = append(apiLastBuildParameters, codersdk.WorkspaceBuildParameter{
+				Name:  "CPU cores",
+				Value: legacyParameter.SourceValue,
+			})
+		}
+	}
 
 	err = codersdk.ValidateWorkspaceBuildParameters(templateVersionParameters, createBuild.RichParameterValues, apiLastBuildParameters)
 	if err != nil {
@@ -506,25 +528,13 @@ func (api *API) postWorkspaceBuilds(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	legacyParameters, err := api.Database.ParameterValues(ctx, database.ParameterValuesParams{
-		Scopes:   []database.ParameterScope{database.ParameterScopeWorkspace},
-		ScopeIds: []uuid.UUID{workspace.ID},
-	})
-	if err != nil && !xerrors.Is(err, sql.ErrNoRows) {
-		httpapi.Write(ctx, rw, http.StatusInternalServerError, codersdk.Response{
-			Message: "Error fetching previous legacy parameters.",
-			Detail:  err.Error(),
-		})
-		return
-	}
-
-	if createBuild.Transition == codersdk.WorkspaceTransitionStart &&
-		len(legacyParameters) > 0 && len(parameters) > 0 {
-		httpapi.Write(ctx, rw, http.StatusBadRequest, codersdk.Response{
-			Message: "Rich parameters can't be used together with legacy parameters.",
-		})
-		return
-	}
+	// if createBuild.Transition == codersdk.WorkspaceTransitionStart &&
+	// 	len(legacyParameters) > 0 && len(parameters) > 0 {
+	// 	httpapi.Write(ctx, rw, http.StatusBadRequest, codersdk.Response{
+	// 		Message: "Rich parameters can't be used together with legacy parameters.",
+	// 	})
+	// 	return
+	// }
 
 	var workspaceBuild database.WorkspaceBuild
 	var provisionerJob database.ProvisionerJob

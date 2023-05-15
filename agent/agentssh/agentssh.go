@@ -166,21 +166,27 @@ func (s *Server) ConnStats() ConnStats {
 func (s *Server) sessionHandler(session ssh.Session) {
 	log.Println("sessionHandler")
 
+	ctx := session.Context()
+
 	if !s.trackSession(session, true) {
 		// See (*Server).Close() for why we call Close instead of Exit.
-		_ = session.Close()
+		err := session.Close()
+		if err != nil {
+			s.logger.Info(ctx, "session.Close", slog.Error(err))
+		}
 		return
 	}
 	defer s.trackSession(session, false)
-
-	ctx := session.Context()
 
 	extraEnv := make([]string, 0)
 	x11, hasX11 := session.X11()
 	if hasX11 {
 		handled := s.x11Handler(session.Context(), x11)
 		if !handled {
-			_ = session.Exit(1)
+			err := session.Exit(1)
+			if err != nil {
+				s.logger.Info(ctx, "session.Exit x11", slog.Error(err))
+			}
 			return
 		}
 		extraEnv = append(extraEnv, fmt.Sprintf("DISPLAY=:%d.0", x11.ScreenNumber))
@@ -193,7 +199,10 @@ func (s *Server) sessionHandler(session ssh.Session) {
 		return
 	default:
 		s.logger.Info(ctx, "unsupported subsystem", slog.F("subsystem", ss))
-		_ = session.Exit(1)
+		err := session.Exit(1)
+		if err != nil {
+			s.logger.Info(ctx, "session.Exit unsupported subsystem", slog.Error(err))
+		}
 		return
 	}
 
@@ -201,21 +210,27 @@ func (s *Server) sessionHandler(session ssh.Session) {
 	var exitError *exec.ExitError
 	if xerrors.As(err, &exitError) {
 		s.logger.Info(ctx, "ssh session returned", slog.Error(exitError))
-		_ = session.Exit(exitError.ExitCode())
+		err := session.Exit(exitError.ExitCode())
+		if err != nil {
+			s.logger.Info(ctx, "session.Exit ssh session returned", slog.Error(err))
+		}
 		return
 	}
 	if err != nil {
 		s.logger.Warn(ctx, "ssh session failed", slog.Error(err))
 		// This exit code is designed to be unlikely to be confused for a legit exit code
 		// from the process.
-		_ = session.Exit(MagicSessionErrorCode)
+		err := session.Exit(MagicSessionErrorCode)
+		if err != nil {
+			s.logger.Info(ctx, "session.Exit ssh session failed", slog.Error(err))
+		}
 		return
 	}
 	_ = session.Exit(0)
 }
 
 func (s *Server) sessionStart(session ssh.Session, extraEnv []string) (retErr error) {
-	log.Println("sessionStart")
+	s.logger.Info(session.Context(), "sessionStart", slog.F("max_timeout", s.srv.MaxTimeout))
 
 	ctx := session.Context()
 	env := append(session.Environ(), extraEnv...)
@@ -344,7 +359,12 @@ func (s *Server) startPTYSession(session ptySession, cmd *pty.Cmd, sshPty ssh.Pt
 	}()
 
 	go func() {
-		_, _ = io.Copy(ptty.InputWriter(), session)
+		s.logger.Info(ctx, "copy input start")
+		n, err := io.Copy(ptty.InputWriter(), session)
+		s.logger.Info(ctx, "copy input done", slog.F("bytes", n), slog.Error(err))
+		if err != nil {
+			s.logger.Info(ctx, "io.Copy ptty.InputWriter", slog.Error(err))
+		}
 	}()
 
 	// We need to wait for the command output to finish copying.  It's safe to
@@ -531,6 +551,7 @@ func (s *Server) Serve(l net.Listener) error {
 	for {
 		conn, err := l.Accept()
 		if err != nil {
+			s.logger.Info(context.Background(), "l.Accept", slog.Error(err))
 			return err
 		}
 		go s.handleConn(l, conn)
@@ -643,15 +664,24 @@ func (s *Server) Close() error {
 		// We call Close on the underlying channel here because we don't
 		// want to send an exit status to the client (via Exit()).
 		// Typically OpenSSH clients will return 255 as the exit status.
-		_ = ss.Close()
+		err := ss.Close()
+		if err != nil {
+			s.logger.Info(context.Background(), "ss.Close", slog.Error(err))
+		}
 	}
 
 	// Close all active listeners and connections.
 	for l := range s.listeners {
-		_ = l.Close()
+		err := l.Close()
+		if err != nil {
+			s.logger.Info(context.Background(), "l.Close", slog.Error(err))
+		}
 	}
 	for c := range s.conns {
-		_ = c.Close()
+		err := c.Close()
+		if err != nil {
+			s.logger.Info(context.Background(), "c.Close", slog.Error(err))
+		}
 	}
 
 	// Close the underlying SSH server.

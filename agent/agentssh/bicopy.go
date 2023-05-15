@@ -3,6 +3,7 @@ package agentssh
 import (
 	"context"
 	"io"
+	"log"
 	"sync"
 )
 
@@ -10,12 +11,16 @@ import (
 // after one or both of them are done writing. If the context is canceled, both
 // of the connections will be closed.
 func Bicopy(ctx context.Context, c1, c2 io.ReadWriteCloser) {
+	log.Println("bicopy is starting")
+
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	defer func() {
-		_ = c1.Close()
-		_ = c2.Close()
+		err1 := c1.Close()
+		log.Printf("c1.Close err: %s", err1)
+		err2 := c2.Close()
+		log.Printf("c2.Close err: %s", err2)
 	}()
 
 	var wg sync.WaitGroup
@@ -26,7 +31,8 @@ func Bicopy(ctx context.Context, c1, c2 io.ReadWriteCloser) {
 			// well.
 			cancel()
 		}()
-		_, _ = io.Copy(dst, src)
+		_, err := io.Copy(dst, src)
+		log.Printf("io.Copy err: %s", err)
 	}
 
 	wg.Add(2)

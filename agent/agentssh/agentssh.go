@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"os"
 	"os/exec"
@@ -112,7 +113,7 @@ func NewServer(ctx context.Context, logger slog.Logger, fs afero.Fs, maxTimeout 
 		HostSigners: []ssh.Signer{randomSigner},
 		LocalPortForwardingCallback: func(ctx ssh.Context, destinationHost string, destinationPort uint32) bool {
 			// Allow local port forwarding all!
-			s.logger.Debug(ctx, "local port forward",
+			s.logger.Info(ctx, "local port forward",
 				slog.F("destination-host", destinationHost),
 				slog.F("destination-port", destinationPort))
 			return true
@@ -122,7 +123,7 @@ func NewServer(ctx context.Context, logger slog.Logger, fs afero.Fs, maxTimeout 
 		},
 		ReversePortForwardingCallback: func(ctx ssh.Context, bindHost string, bindPort uint32) bool {
 			// Allow reverse port forwarding all!
-			s.logger.Debug(ctx, "local port forward",
+			s.logger.Info(ctx, "local port forward",
 				slog.F("bind-host", bindHost),
 				slog.F("bind-port", bindPort))
 			return true
@@ -163,6 +164,8 @@ func (s *Server) ConnStats() ConnStats {
 }
 
 func (s *Server) sessionHandler(session ssh.Session) {
+	log.Println("sessionHandler")
+
 	if !s.trackSession(session, true) {
 		// See (*Server).Close() for why we call Close instead of Exit.
 		_ = session.Close()
@@ -189,7 +192,7 @@ func (s *Server) sessionHandler(session ssh.Session) {
 		s.sftpHandler(session)
 		return
 	default:
-		s.logger.Debug(ctx, "unsupported subsystem", slog.F("subsystem", ss))
+		s.logger.Info(ctx, "unsupported subsystem", slog.F("subsystem", ss))
 		_ = session.Exit(1)
 		return
 	}
@@ -197,7 +200,7 @@ func (s *Server) sessionHandler(session ssh.Session) {
 	err := s.sessionStart(session, extraEnv)
 	var exitError *exec.ExitError
 	if xerrors.As(err, &exitError) {
-		s.logger.Debug(ctx, "ssh session returned", slog.Error(exitError))
+		s.logger.Info(ctx, "ssh session returned", slog.Error(exitError))
 		_ = session.Exit(exitError.ExitCode())
 		return
 	}
@@ -212,6 +215,8 @@ func (s *Server) sessionHandler(session ssh.Session) {
 }
 
 func (s *Server) sessionStart(session ssh.Session, extraEnv []string) (retErr error) {
+	log.Println("sessionStart")
+
 	ctx := session.Context()
 	env := append(session.Environ(), extraEnv...)
 	var magicType string
@@ -242,6 +247,8 @@ func (s *Server) sessionStart(session ssh.Session, extraEnv []string) (retErr er
 	}
 
 	if ssh.AgentRequested(session) {
+		s.logger.Debug(ctx, "AgentRequested", slog.F("session", session))
+
 		l, err := ssh.NewAgentListener()
 		if err != nil {
 			return xerrors.Errorf("new agent listener: %w", err)
@@ -253,8 +260,10 @@ func (s *Server) sessionStart(session ssh.Session, extraEnv []string) (retErr er
 
 	sshPty, windowSize, isPty := session.Pty()
 	if isPty {
+		s.logger.Debug(ctx, "startPTYSession", slog.F("cmd", cmd.AsExec().String()), slog.F("session", session))
 		return s.startPTYSession(session, cmd, sshPty, windowSize)
 	}
+	s.logger.Debug(ctx, "startNonPTYSession", slog.F("cmd", cmd.AsExec().String()), slog.F("session", session))
 	return startNonPTYSession(session, cmd.AsExec())
 }
 
@@ -347,7 +356,7 @@ func (s *Server) startPTYSession(session ptySession, cmd *pty.Cmd, sshPty ssh.Pt
 	// 2. The client hangs up, which cancels the command's Context, and go will
 	//    kill the command's process.  This then has the same effect as (1).
 	n, err := io.Copy(session, ptty.OutputReader())
-	s.logger.Debug(ctx, "copy output done", slog.F("bytes", n), slog.Error(err))
+	s.logger.Info(ctx, "copy output done", slog.F("bytes", n), slog.Error(err))
 	if err != nil {
 		return xerrors.Errorf("copy error: %w", err)
 	}
@@ -388,7 +397,7 @@ func (s *Server) sftpHandler(session ssh.Session) {
 
 	server, err := sftp.NewServer(session, opts...)
 	if err != nil {
-		s.logger.Debug(ctx, "initialize sftp server", slog.Error(err))
+		s.logger.Info(ctx, "initialize sftp server", slog.Error(err))
 		return
 	}
 	defer server.Close()
@@ -534,11 +543,12 @@ func (s *Server) handleConn(l net.Listener, c net.Conn) {
 	if !s.trackConn(l, c, true) {
 		// Server is closed or we no longer want
 		// connections from this listener.
-		s.logger.Debug(context.Background(), "received connection after server closed")
+		s.logger.Info(context.Background(), "received connection after server closed")
 		return
 	}
 	defer s.trackConn(l, c, false)
 
+	s.logger.Info(context.Background(), "Server.handleConn")
 	s.srv.HandleConn(c)
 }
 

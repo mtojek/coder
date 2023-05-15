@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"net/netip"
@@ -198,7 +199,9 @@ func (c *WorkspaceAgentConn) ReconnectingPTY(ctx context.Context, id uuid.UUID, 
 
 	_, err = conn.Write(data)
 	if err != nil {
-		_ = conn.Close()
+		log.Println("ReconnectingPTY error", err)
+		connErr := conn.Close()
+		log.Println("connError", connErr)
 		return nil, err
 	}
 	return conn, nil
@@ -224,6 +227,7 @@ func (c *WorkspaceAgentConn) SSHClient(ctx context.Context) (*ssh.Client, error)
 	if err != nil {
 		return nil, xerrors.Errorf("ssh: %w", err)
 	}
+	log.Println("ssh.NewClientConn")
 	sshConn, channels, requests, err := ssh.NewClientConn(netConn, "localhost:22", &ssh.ClientConfig{
 		// SSH host validation isn't helpful, because obtaining a peer
 		// connection already signifies user-intent to dial a workspace.
